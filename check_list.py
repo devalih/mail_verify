@@ -1,4 +1,5 @@
 import csv
+from validate_email import validate_email
 
 import dns.resolver
 
@@ -13,14 +14,16 @@ def main():
                     domain = row[0].split("@")[-1]
                     if domain in domains:
                         if domains[domain]:
-                            csv_write.writerow(row)
+                            if validate_email(row[0]):
+                                csv_write.writerow(row)
                     else:
                         print(domain)
                         try:
                             dns.resolver.query(domain, 'MX')
                             print("Yes")
                             domains[domain] = True
-                            csv_write.writerow(row)
+                            if validate_email(row[0]):
+                                csv_write.writerow(row)
                         except dns.exception.DNSException as e:
                             print("No", e)
                             domains[domain] = False
